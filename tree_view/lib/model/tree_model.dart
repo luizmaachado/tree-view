@@ -65,4 +65,35 @@ class TreeModel {
       });
     }
   }
+
+  Future<bool?> searchResource(String filter, Resource resource,
+      Map<String, List<Resource>> childHash) async {
+    if (childHash[resource.id] != null) {
+      List<Resource> resouceChild = List.from(childHash[resource.id]!);
+      for (var r in resouceChild) {
+        await searchResource(filter, r, childHash);
+      }
+
+      if (childHash[resource.id]!.isEmpty && !resource.name.contains(filter)) {
+        return removeFromHash(resource, childHash);
+      }
+    } else if (!resource.name.contains(filter)) {
+      return removeFromHash(resource, childHash);
+    }
+    return null;
+  }
+
+  bool? removeFromHash(
+      Resource resource, Map<String, List<Resource>> childList) {
+    if (childList[resource.parentId] != null) {
+      childList[resource.parentId]!
+          .removeWhere((element) => element == resource);
+    } else if (childList[resource.locationId] != null) {
+      childList[resource.locationId]!
+          .removeWhere((element) => element == resource);
+    } else {
+      return false;
+    }
+    return null;
+  }
 }
