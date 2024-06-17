@@ -20,34 +20,33 @@ class Companies extends StatelessWidget {
         children: [
           TextButton(
             onPressed: () async {
-              await viewModel.createTree(CompaniesEnum.Apex);
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          AssetTreeView(viewModel: viewModel)));
+                      builder: (context) => AssetTreeView(
+                          viewModel: viewModel, company: CompaniesEnum.Apex)));
             },
             child: Text('Apex'),
           ),
           TextButton(
             onPressed: () async {
-              viewModel.createTree(CompaniesEnum.Jaguar);
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          AssetTreeView(viewModel: viewModel)));
+                      builder: (context) => AssetTreeView(
+                          viewModel: viewModel,
+                          company: CompaniesEnum.Jaguar)));
             },
             child: Text('Jaguar'),
           ),
           TextButton(
             onPressed: () async {
-              viewModel.createTree(CompaniesEnum.Tobias);
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          AssetTreeView(viewModel: viewModel)));
+                      builder: (context) => AssetTreeView(
+                          viewModel: viewModel,
+                          company: CompaniesEnum.Tobias)));
             },
             child: Text('Tobias'),
           )

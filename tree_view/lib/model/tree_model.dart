@@ -13,7 +13,7 @@ class TreeModel {
     return childHash;
   }
 
-  createTree(String asset) async {
+  Future<List<Resource>> createTree(String asset) async {
     orphanList = [];
     childHash = HashMap();
     String assetPath = asset + '/assets.json';
@@ -54,6 +54,8 @@ class TreeModel {
         addParent(resource, resource.parentId);
       }
     }
+
+    return orphanList;
   }
 
   void addParent(Resource resource, String? parentId) {
@@ -66,34 +68,54 @@ class TreeModel {
     }
   }
 
-  Future<bool?> searchResource(String filter, Resource resource,
-      Map<String, List<Resource>> childHash) async {
-    if (childHash[resource.id] != null) {
-      List<Resource> resouceChild = List.from(childHash[resource.id]!);
+  Future<bool?> searchResource(Map<String, String> filterObj, Resource resource,
+      Map<String, List<Resource>> filterHash) async {
+    if (filterHash[resource.id] != null) {
+      List<Resource> resouceChild = List.from(filterHash[resource.id]!);
       for (var r in resouceChild) {
-        await searchResource(filter, r, childHash);
+        await searchResource(filterObj, r, filterHash);
       }
 
-      if (childHash[resource.id]!.isEmpty && !resource.name.contains(filter)) {
-        return removeFromHash(resource, childHash);
+      if (filterHash[resource.id]!.isEmpty &&
+          !checkFilter(filterObj, resource)) {
+        return removeFromHash(resource, filterHash);
       }
-    } else if (!resource.name.contains(filter)) {
-      return removeFromHash(resource, childHash);
+    } else if (!checkFilter(filterObj, resource)) {
+      return removeFromHash(resource, filterHash);
     }
     return null;
   }
 
   bool? removeFromHash(
-      Resource resource, Map<String, List<Resource>> childList) {
-    if (childList[resource.parentId] != null) {
-      childList[resource.parentId]!
+      Resource resource, Map<String, List<Resource>> filterHash) {
+    if (filterHash[resource.parentId] != null) {
+      filterHash[resource.parentId]!
           .removeWhere((element) => element == resource);
-    } else if (childList[resource.locationId] != null) {
-      childList[resource.locationId]!
+    } else if (filterHash[resource.locationId] != null) {
+      filterHash[resource.locationId]!
           .removeWhere((element) => element == resource);
     } else {
       return false;
     }
     return null;
+  }
+
+  bool checkFilter(Map<String, String> filterObj, Resource resource) {
+    if (filterObj.containsKey('name')) {
+      if (!resource.name.contains(filterObj['name']!)) {
+        return false;
+      }
+    }
+    if (filterObj.containsKey('sensorType')) {
+      if (resource.sensorType != filterObj['sensorType']) {
+        return false;
+      }
+    }
+    if (filterObj.containsKey('status')) {
+      if (resource.status != filterObj['status']) {
+        return false;
+      }
+    }
+    return true;
   }
 }

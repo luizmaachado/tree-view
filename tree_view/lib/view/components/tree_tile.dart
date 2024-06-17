@@ -19,10 +19,15 @@ class TreeTile extends StatefulWidget {
 class _TreeTile extends State<TreeTile> {
   @override
   Widget build(BuildContext context) {
+    bool hasChildren =
+        widget.viewModel.getChildHash().keys.contains(widget.resource.id);
     return GestureDetector(
         onTap: () {
           setState(() {
-            widget.showChildren = !widget.showChildren;
+            print(widget.resource.status);
+            if (hasChildren) {
+              widget.showChildren = !widget.showChildren;
+            }
           });
         },
         child: Container(
@@ -30,14 +35,22 @@ class _TreeTile extends State<TreeTile> {
                 EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
             child: Column(children: [
               Row(children: [
-                widget.viewModel
-                        .getChildHash()
-                        .keys
-                        .contains(widget.resource.id)
+                hasChildren
                     ? const Icon(Icons.arrow_drop_down_rounded)
-                    : Container(),
+                    : SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.065,
+                      ),
                 getSvg(),
-                Text(widget.resource.name)
+                Flexible(
+                    child: Container(
+                        child: Text(
+                  widget.resource.name,
+                  overflow: TextOverflow.ellipsis,
+                ))),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.02,
+                ),
+                displaySign(),
               ]),
               widget.showChildren
                   ? Padding(
@@ -70,6 +83,25 @@ class _TreeTile extends State<TreeTile> {
         'assets/icons/component.svg',
         color: Colors.blue,
       );
+    }
+  }
+
+  Widget displaySign() {
+    if (widget.resource.sensorType == 'energy') {
+      return SvgPicture.asset('assets/icons/bolt.svg',
+          color: Colors.green,
+          height: MediaQuery.of(context).size.height * 0.02);
+    } else if (widget.resource.status == 'alert') {
+      return ClipOval(
+          child: Container(
+              height: MediaQuery.of(context).size.height * 0.015,
+              width: MediaQuery.of(context).size.height * 0.015,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              )));
+    } else {
+      return Container();
     }
   }
 }

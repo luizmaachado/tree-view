@@ -5,7 +5,7 @@ import 'package:tree_view/view/components/tree_tile.dart';
 import 'package:tree_view/view_model/tree_view_model.dart';
 
 class TreeList extends StatelessWidget {
-  final Future<List<Resource>> resourceList;
+  final List<Resource> resourceList;
   final TreeViewModel viewModel;
 
   const TreeList(
@@ -13,18 +13,7 @@ class TreeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: resourceList,
-      builder: (BuildContext context, AsyncSnapshot<List<Resource>> snapshot) {
-        if (snapshot.hasData) {
-          return Column(children: createTile(snapshot.data!));
-        } else if (snapshot.hasError) {
-          return Container();
-        } else {
-          return CircularProgressIndicator();
-        }
-      },
-    );
+    return Column(children: createTile(resourceList));
   }
 
   createTile(List<Resource> snapshot) {
