@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
+///
+/// Custom app bar
+/// requires bool isMainPage to check if its a main page
+///
 class CustomAppBar extends AppBar {
   bool isMainPage;
 

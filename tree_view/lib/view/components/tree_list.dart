@@ -4,6 +4,9 @@ import 'package:tree_view/model/resource_model.dart';
 import 'package:tree_view/view/components/tree_tile.dart';
 import 'package:tree_view/view_model/tree_view_model.dart';
 
+///
+/// Class that shows the tree
+///
 class TreeList extends StatelessWidget {
   final List<Resource> resourceList;
   final TreeViewModel viewModel;
@@ -19,10 +22,10 @@ class TreeList extends StatelessWidget {
   createTile(List<Resource> snapshot) {
     var treeTile = <TreeTile>[];
 
-    snapshot.forEach((i) {
+    snapshot.forEach((resource) {
       return treeTile.add(TreeTile(
         viewModel: viewModel,
-        resource: i,
+        resource: resource,
       ));
     });
     return treeTile;

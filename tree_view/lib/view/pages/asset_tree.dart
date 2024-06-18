@@ -4,10 +4,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tree_view/constants/companies_enum.dart';
 import 'package:tree_view/model/resource_model.dart';
-import 'package:tree_view/view/components/app_bar.dart';
+import 'package:tree_view/view/widgets/app_bar.dart';
 import 'package:tree_view/view/components/tree_list.dart';
 import 'package:tree_view/view_model/tree_view_model.dart';
 
+///
+/// Page that shows the tree view and has filters
+///
 class AssetTreeView extends StatefulWidget {
   final TreeViewModel viewModel;
   final CompaniesEnum company;
@@ -25,7 +28,6 @@ class _AssetTreeView extends State<AssetTreeView> {
   @override
   void initState() {
     parentList = widget.viewModel.getOrphanList(widget.company, getFilterObj());
-    // TODO: implement initState
     super.initState();
   }
 
@@ -38,22 +40,27 @@ class _AssetTreeView extends State<AssetTreeView> {
   TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
             appBar: CustomAppBar(isMainPage: false),
             body: ListView(children: [
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              searchBar(),
-              buttonSearch(),
-              Divider(),
+              SizedBox(height: screenSize.height * 0.02),
+              Container(
+                  padding: EdgeInsets.only(left: screenSize.width * 0.05),
+                  child: Column(children: [
+                    searchBar(),
+                    SizedBox(height: screenSize.height * 0.01),
+                    buttonSearch()
+                  ])),
+              const Divider(),
               FutureBuilder(
                   future: parentList,
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Resource>> snapshot) {
                     if (!snapshot.hasData) {
-                      return CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      print(snapshot.error);
                       return Container();
                     } else {
                       return TreeList(
@@ -64,82 +71,111 @@ class _AssetTreeView extends State<AssetTreeView> {
             ])));
   }
 
+  // function that manages the search bar
   void search(String value) {
-    if (searchController.text == '') {
-      widget.viewModel.nameFilter = null;
-    } else {
-      widget.viewModel.nameFilter = searchController.text;
-    }
     setState(() {});
   }
 
+  // function that creates the button filters
   Widget buttonSearch() {
+    Size screenSize = MediaQuery.of(context).size;
     return Row(
       children: [
         OutlinedButton(
             style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5))),
                 backgroundColor: MaterialStatePropertyAll<Color>(
                     widget.isSensorButtonPressed
-                        ? Color.fromARGB(255, 33, 136, 255)
+                        ? const Color.fromARGB(255, 33, 136, 255)
                         : Colors.white)),
             onPressed: () {
               widget.isSensorButtonPressed = !widget.isSensorButtonPressed;
               setState(() {});
             },
             child: Row(children: [
-              SvgPicture.asset('assets/icons/energy.svg'),
-              Text('Sensor de Energia')
+              SvgPicture.asset('assets/icons/energy.svg',
+                  height: screenSize.height * 0.03,
+                  color: widget.isSensorButtonPressed
+                      ? Colors.white
+                      : const Color.fromARGB(255, 119, 129, 140)),
+              Text('Sensor de Energia',
+                  style: TextStyle(
+                      color: widget.isSensorButtonPressed
+                          ? Colors.white
+                          : const Color.fromARGB(255, 119, 129, 140)))
             ])),
+        SizedBox(
+          width: screenSize.width * 0.05,
+        ),
         OutlinedButton(
             style: ButtonStyle(
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5))),
                 backgroundColor: MaterialStatePropertyAll<Color>(
                     widget.isCriticalButtonPressed
-                        ? Color.fromARGB(255, 33, 136, 255)
+                        ? const Color.fromARGB(255, 33, 136, 255)
                         : Colors.white)),
             onPressed: () {
               widget.isCriticalButtonPressed = !widget.isCriticalButtonPressed;
               setState(() {});
             },
             child: Row(children: [
-              SvgPicture.asset('assets/icons/critical.svg'),
-              Text('Crítico')
+              SvgPicture.asset(
+                'assets/icons/critical.svg',
+                height: screenSize.height * 0.03,
+                color: widget.isCriticalButtonPressed
+                    ? Colors.white
+                    : const Color.fromARGB(255, 119, 129, 140),
+              ),
+              Text(
+                'Crítico',
+                style: TextStyle(
+                    color: widget.isCriticalButtonPressed
+                        ? Colors.white
+                        : const Color.fromARGB(255, 119, 129, 140)),
+              )
             ])),
       ],
     );
   }
 
+// function that creates the search bar
   Widget searchBar() {
+    Size screenSize = MediaQuery.of(context).size;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-            width: MediaQuery.of(context).size.width * 0.9,
+            width: screenSize.width * 0.9,
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 234, 239, 243),
             ),
-            child: Row(children: [
-              const Icon(
-                Icons.search,
-                color: Color.fromARGB(255, 142, 152, 163),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: TextField(
-                  controller: searchController,
-                  decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Buscar Ativo ou Local',
-                      hintStyle: TextStyle(
-                        color: Color.fromARGB(255, 142, 152, 163),
-                      )),
-                  onChanged: search,
-                ),
-              )
-            ]))
+            child: Padding(
+                padding: EdgeInsets.only(left: screenSize.width * 0.04),
+                child: Row(children: [
+                  const Icon(
+                    Icons.search,
+                    color: Color.fromARGB(255, 142, 152, 163),
+                  ),
+                  SizedBox(
+                    width: screenSize.width * 0.5,
+                    child: TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Buscar Ativo ou Local',
+                          hintStyle: TextStyle(
+                            color: Color.fromARGB(255, 142, 152, 163),
+                          )),
+                      onChanged: search,
+                    ),
+                  )
+                ])))
       ],
     );
   }
 
+// function that manages filter
   Map<String, String> getFilterObj() {
     if (searchController.text != '') {
       filterObj.addAll({'name': searchController.text});

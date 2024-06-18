@@ -5,6 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:tree_view/constants/resource_type_enum.dart';
 import 'package:tree_view/model/resource_model.dart';
 
+///
+/// Tree Model class
+/// has orphan list and childHash
+///
 class TreeModel {
   List<Resource> orphanList = [];
   Map<String, List<Resource>> childHash = HashMap();
@@ -12,6 +16,10 @@ class TreeModel {
   Map<String, List<Resource>> getchildHash() {
     return childHash;
   }
+
+  // function that creates the hashmap of parent-children and list of orphans
+  // receives the path to open the json files
+  // returns orphan list
 
   Future<List<Resource>> createTree(String asset) async {
     orphanList = [];
@@ -58,6 +66,7 @@ class TreeModel {
     return orphanList;
   }
 
+  // Function that add a parent to the parent-children hashmap
   void addParent(Resource resource, String? parentId) {
     if (childHash[parentId] != null) {
       childHash[parentId]!.add(resource);
@@ -68,6 +77,8 @@ class TreeModel {
     }
   }
 
+  // Function that filters and modifies the hashmap
+  // returns if resource will stay on orphan list
   Future<bool?> searchResource(Map<String, String> filterObj, Resource resource,
       Map<String, List<Resource>> filterHash) async {
     if (filterHash[resource.id] != null) {
@@ -86,6 +97,7 @@ class TreeModel {
     return null;
   }
 
+  // auxiliar function to delete child from hash
   bool? removeFromHash(
       Resource resource, Map<String, List<Resource>> filterHash) {
     if (filterHash[resource.parentId] != null) {
@@ -100,6 +112,7 @@ class TreeModel {
     return null;
   }
 
+  //auxiliar function to filter a resource based on filter object
   bool checkFilter(Map<String, String> filterObj, Resource resource) {
     if (filterObj.containsKey('name')) {
       if (!resource.name.contains(filterObj['name']!)) {

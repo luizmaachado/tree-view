@@ -4,12 +4,17 @@ import 'package:tree_view/constants/companies_enum.dart';
 import 'package:tree_view/model/resource_model.dart';
 import 'package:tree_view/model/tree_model.dart';
 
+///
+/// Tree ViewModel Class
+///
 class TreeViewModel {
   TreeModel tree = TreeModel();
   late CompaniesEnum actualCompany = CompaniesEnum.None;
   String? nameFilter;
   bool energySensorFilter = false;
   bool criticalStatusFilter = false;
+
+  // Function that, given a company, returns the orphan list
   Future<List<Resource>> createTree(CompaniesEnum company) async {
     String assetPath = '';
 
@@ -29,12 +34,15 @@ class TreeViewModel {
     return list;
   }
 
+  // Function that, given a resource, returns his children
   List<Resource> getChild(Resource resource) {
     return tree.childHash[resource.id] == null
         ? []
         : tree.childHash[resource.id]!;
   }
 
+  // Function that, given company and filterObj returns a list of orphans
+  // (main function to manage the assetTree page)
   Future<List<Resource>> getOrphanList(
       CompaniesEnum company, Map<String, String> filterObj) async {
     if (filterObj.keys.isNotEmpty) {
@@ -44,10 +52,12 @@ class TreeViewModel {
     return createTree(company);
   }
 
+  // Function that simply returns the childHash
   Map<String, List<Resource>> getChildHash() {
     return tree.childHash;
   }
 
+  // Function that filters the tree given a filter object
   Future<List<Resource>> getFilteredTree(Map<String, String> filterObj) async {
     Map<String, List<Resource>> filteredChildHash =
         Map<String, List<Resource>>.from(getChildHash());
@@ -59,6 +69,7 @@ class TreeViewModel {
     return filteredList;
   }
 
+  // Auxiliar function that filters the tree
   Future<List<Resource>> search(Map<String, List<Resource>> filteredChildHash,
       List<Resource> filteredList, Map<String, String> filterObj) async {
     for (Resource resource in tree.orphanList) {
